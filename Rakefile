@@ -126,3 +126,27 @@ task :zip_library_android do
   zf = ZipFileGenerator.new('lib', 'auto.zip')
   zf.write()
 end
+
+desc "update library_macos"
+task :update_library_macos do
+  build_dir = 'build/macos'
+  lib_dir = "#{GIT_ROOT}/lib/macos_64"
+
+  FileUtils.mkdir_p(build_dir) unless File.directory?(build_dir)
+  FileUtils.mkdir_p(lib_dir) unless File.directory?(lib_dir)
+
+  Dir.chdir(build_dir) do
+    sh 'git clone https://github.com/webmproject/libwebp.git'
+    Dir.chdir('libwebp') do
+      sh "git checkout #{VERSION}"
+      sh './autogen.sh'
+      sh "./configure --prefix=`pwd`/.lib --enable-everything --disable-static"
+      sh 'make && make install'
+    end
+
+    cp_r `realpath libwebp/.lib/lib/libwebp.dylib`.strip, lib_dir
+    cp_r `realpath libwebp/.lib/lib/libwebpdecoder.dylib`.strip, lib_dir
+    cp_r `realpath libwebp/.lib/lib/libwebpdemux.dylib`.strip, lib_dir
+    cp_r `realpath libwebp/.lib/lib/libwebpmux.dylib`.strip, lib_dir
+  end
+end
