@@ -1,4 +1,4 @@
-name: Hello
+name: Release with Tag
 
 on:
   push:
@@ -7,10 +7,9 @@ on:
 
 jobs:
   release:
-    name: Hell
+    name: Write Release
     runs-on: ubuntu-latest
     steps:
-
       - name: Checkout
         uses: actions/checkout@v2
 
@@ -45,13 +44,19 @@ jobs:
   upload_asset_linux:
     needs: release
     name: Upload Asset on Linux
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Install Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.7
+          bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+
       - name: Run Buildscript
-        run: sh ./buildscript.sh
+        run: rake auto
 
       - name: Upload Asset
         uses: actions/upload-release-asset@v1
