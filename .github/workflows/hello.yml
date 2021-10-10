@@ -6,20 +6,23 @@ on:
       - '*'
 
 jobs:
-  build:
+  release:
     name: Hell
     runs-on: ubuntu-latest
     steps:
       - name: Hello world
         run: echo "hi"
+
       - name: Checkout
         uses: actions/checkout@v2
+
+      - name: Changelog Reader
+        id: changelog_reader
+        uses: mindsers/changelog-reader-action@v2
         with:
-          fetch-depth: 0
-      - name: Check Files
-        run: ls -al
-      - name: Run Buildscript
-        run: sh ./buildscript.sh
+          version: ${{ github.ref }}
+          path: ./CHANGELOG.md
+
       - name: Release
         id: create_release
         uses: actions/create-release@v1
@@ -30,14 +33,28 @@ jobs:
           prerelease: false
           release_name: ${{ github.ref }}
           tag_name: ${{ github.ref }}
-          body: |
-            Auto release
+          body: ${{ steps.changelog_reader.outputs.changes }}
+          
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+
+  upload_asset_linux:
+    needs: release
+    name: Upload Asset on Linux
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Run Buildscript
+        run: sh ./buildscript.sh
+
       - name: Upload Asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          upload_url: ${{ needs.release.outputs.upload_url }}
           asset_path: ./auto.so
           asset_name: auto.so
           asset_content_type: application/octet-stream
