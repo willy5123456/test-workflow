@@ -14,6 +14,8 @@ jobs:
         run: echo "hi"
       - name: Checkout
         uses: actions/checkout@v2
+      - name: check file
+        run: ls -al
       - name: RunScript
         run: sh ./buildscript.sh
       - name: Release

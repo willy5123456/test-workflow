@@ -1,1 +1,4 @@
-touch auto.so
+#!/bin/sh
+
+touch ./auto.so
+echo "hi"
