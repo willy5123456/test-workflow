@@ -1,7 +1,7 @@
 require 'zip'
 
 GIT_ROOT = `git rev-parse --show-toplevel`.strip
-VERSION = '1.0.0'
+VERSION = '1.2.1'
 LIBWEBP = "libwebp"
 
 desc "default"
@@ -155,4 +155,86 @@ desc "zip library_macos"
 task :zip_library_macos do
   zf = ZipFileGenerator.new('lib', 'macos.zip')
   zf.write()
+end
+
+desc "prepare library_windows"
+task :prepare_library_windows do
+  build_dir = 'build/windows'
+  FileUtils.mkdir_p(build_dir) unless File.directory?(build_dir)
+  Dir.chdir(build_dir) do
+    sh 'git clone https://github.com/webmproject/libwebp.git'
+    Dir.chdir('libwebp') do
+      sh "git checkout #{VERSION}"
+    end
+  end
+end
+
+desc "update library_windows_x64"
+task :update_library_windows_x64 do
+  # Windows + R
+  # %comspec% /k "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
+  build_dir = 'build/windows'
+  lib_dir = "#{GIT_ROOT}/lib/windows"
+
+  Dir.chdir(build_dir) do
+    Dir.chdir('libwebp') do
+      puts "============== x64"
+      sh "git clean -xdf"
+      arch_lib_dir = "#{lib_dir}/x64"
+      FileUtils.mkdir_p(arch_lib_dir) unless File.directory?(arch_lib_dir)
+      sh 'nmake /f Makefile.vc CFG=release-dynamic RTLIBCFG=dynamic OBJDIR=output ARCH=x64'
+      cp 'output/release-dynamic/x64/bin/libwebp.dll', arch_lib_dir
+      cp 'output/release-dynamic/x64/bin/libwebpdecoder.dll', arch_lib_dir
+      cp 'output/release-dynamic/x64/bin/libwebpdemux.dll', arch_lib_dir
+    end
+  end
+end
+
+desc "update library_windows_x86"
+task :update_library_windows_x86 do
+  # Windows + R
+  # %comspec% /k "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
+  build_dir = 'build/windows'
+  lib_dir = "#{GIT_ROOT}/lib/windows"
+
+  Dir.chdir(build_dir) do
+    Dir.chdir('libwebp') do
+      puts "============== x86"
+      sh "git clean -xdf"
+      arch_lib_dir = "#{lib_dir}/x86"
+      FileUtils.mkdir_p(arch_lib_dir) unless File.directory?(arch_lib_dir)
+      sh 'nmake /f Makefile.vc CFG=release-dynamic RTLIBCFG=dynamic OBJDIR=output ARCH=x86'
+      cp 'output/release-dynamic/x86/bin/libwebp.dll', arch_lib_dir
+      cp 'output/release-dynamic/x86/bin/libwebpdecoder.dll', arch_lib_dir
+      cp 'output/release-dynamic/x86/bin/libwebpdemux.dll', arch_lib_dir
+    end
+  end
+end
+
+desc "update library_windows_x86_arm64"
+task :update_library_windows_x86_arm64 do
+  # Windows + R
+  # %comspec% /k "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
+  build_dir = 'build/windows'
+  lib_dir = "#{GIT_ROOT}/lib/windows"
+
+  Dir.chdir(build_dir) do
+    Dir.chdir('libwebp') do
+      puts "============== ARM"
+      sh "git clean -xdf"
+      arch_lib_dir = "#{lib_dir}/ARM"
+      FileUtils.mkdir_p(arch_lib_dir) unless File.directory?(arch_lib_dir)
+
+      data = File.read("Makefile.vc") 
+      filtered_data = data.gsub("OUT_LIBS = $(LIBWEBPDECODER) $(LIBWEBP)", "OUT_LIBS = $(LIBWEBPDECODER) $(LIBWEBP) $(LIBWEBPDEMUX)") 
+      File.open("Makefile.vc", "w") do |f|
+        f.write(filtered_data)
+      end
+
+      sh 'nmake /f Makefile.vc CFG=release-dynamic RTLIBCFG=dynamic OBJDIR=output ARCH=ARM'
+      cp 'output/release-dynamic/ARM/bin/libwebp.dll', arch_lib_dir
+      cp 'output/release-dynamic/ARM/bin/libwebpdecoder.dll', arch_lib_dir
+      cp 'output/release-dynamic/ARM/bin/libwebpdemux.dll', arch_lib_dir
+    end
+  end
 end

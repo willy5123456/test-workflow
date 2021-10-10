@@ -1,5 +1,7 @@
 # test-workflow
 
+[![Release with Tag](https://github.com/netpyoung/test-workflow/actions/workflows/release_with_tag.yml/badge.svg)](https://github.com/netpyoung/test-workflow/actions/workflows/release_with_tag.yml)
+
 - [x] tag
 - [x] 체크인
 - [x] Rake
