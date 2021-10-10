@@ -2,8 +2,8 @@ name: Hello
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - 'v*'
 
 jobs:
   build:
@@ -12,3 +12,28 @@ jobs:
     steps:
       - name: Hello world
         run: echo "hi"
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: RunScript
+        run: sh ./buildscript.sh
+      - name: Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          draft: false
+          prerelease: false
+          release_name: ${{ steps.version.outputs.version  }}
+          tag_name: ${{ github.ref }}
+          body: |
+            Auto release
+      - name: Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./auto.so
+          asset_name: auto.so
+          asset_content_type: application/octet-stream
