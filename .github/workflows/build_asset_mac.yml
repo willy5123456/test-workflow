@@ -1,6 +1,6 @@
 name: Build asset on Mac
 
-on: [push]
+# on: [push]
 
 jobs:
   build_asset_mac:

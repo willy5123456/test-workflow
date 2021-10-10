@@ -123,7 +123,7 @@ end
 
 desc "zip library_android"
 task :zip_library_android do
-  zf = ZipFileGenerator.new('lib', 'auto.zip')
+  zf = ZipFileGenerator.new('lib', 'android.zip')
   zf.write()
 end
 
@@ -149,4 +149,10 @@ task :update_library_macos do
     cp_r `realpath libwebp/.lib/lib/libwebpdemux.dylib`.strip, lib_dir
     cp_r `realpath libwebp/.lib/lib/libwebpmux.dylib`.strip, lib_dir
   end
+end
+
+desc "zip library_macos"
+task :zip_library_macos do
+  zf = ZipFileGenerator.new('lib', 'macos.zip')
+  zf.write()
 end
