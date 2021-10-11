@@ -227,6 +227,26 @@ task :update_library_windows_arm64 do
   end
 end
 
+desc "update library_linux"
+task :update_library_linux do
+  build_dir = 'build/linux'
+  lib_dir = "#{GIT_ROOT}/lib/linux_64"
+
+  FileUtils.mkdir_p(build_dir) unless File.directory?(build_dir)
+  FileUtils.mkdir_p(lib_dir) unless File.directory?(lib_dir)
+
+  Dir.chdir(build_dir) do
+    sh 'git clone https://github.com/webmproject/libwebp.git'
+    Dir.chdir('libwebp') do
+      sh "git checkout #{VERSION}"
+      sh './autogen.sh'
+      sh "./configure --prefix=`pwd`/.lib --enable-everything --disable-static"
+      sh 'make && make install'
+
+      cp_r '.lib/', lib_dir
+    end
+  end
+end
 
 desc "zip library_android"
 task :zip_library_android do
@@ -243,5 +263,11 @@ end
 desc "zip library_windows"
 task :zip_library_windows do
   zf = ZipFileGenerator.new('lib', 'windows.zip')
+  zf.write()
+end
+
+desc "zip library_linux"
+task :zip_library_linux do
+  zf = ZipFileGenerator.new('lib', 'linux.zip')
   zf.write()
 end
