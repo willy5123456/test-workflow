@@ -12,6 +12,25 @@
 - [x] 릴리즈
 - [ ] 멀티플렛폼
 
+
+| Platforms | Arch        | Support? | action |
+| --------- | ----------- | -------- | ------ |
+| Windows   | x86         |          | o      |
+| Windows   | x86_64      |          | o      |
+| Windows   | x86_arm64   |          | o      |
+| Linux     | x86_64      |          | o      |
+| macOS     | x86_64      |          | o      |
+| iOS       | 64bit       |          |        |
+| tvOS      | 64bit       |          |        |
+| Android   | armeabi-v7a |          | o      |
+| Android   | arm64_v8a   |          | o      |
+| Android   | x86         |          | o      |
+| Android   | x86_64      |          | o      |
+| Linux     | x86         | x        |        |
+| WebGL     | .           | x        | x      |
+| Other     | .           | x        | x      |
+
+
 ## Ref
 
 - github action context

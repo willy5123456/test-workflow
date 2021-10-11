@@ -121,12 +121,6 @@ task :auto do
   zf.write()
 end
 
-desc "zip library_android"
-task :zip_library_android do
-  zf = ZipFileGenerator.new('lib', 'android.zip')
-  zf.write()
-end
-
 desc "update library_macos"
 task :update_library_macos do
   build_dir = 'build/macos'
@@ -149,12 +143,6 @@ task :update_library_macos do
     cp_r `realpath libwebp/.lib/lib/libwebpdemux.dylib`.strip, lib_dir
     cp_r `realpath libwebp/.lib/lib/libwebpmux.dylib`.strip, lib_dir
   end
-end
-
-desc "zip library_macos"
-task :zip_library_macos do
-  zf = ZipFileGenerator.new('lib', 'macos.zip')
-  zf.write()
 end
 
 desc "prepare library_windows"
@@ -211,8 +199,8 @@ task :update_library_windows_x86 do
   end
 end
 
-desc "update library_windows_x86_arm64"
-task :update_library_windows_x86_arm64 do
+desc "update library_windows_arm64"
+task :update_library_windows_arm64 do
   # Windows + R
   # %comspec% /k "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
   build_dir = 'build/windows'
@@ -237,4 +225,23 @@ task :update_library_windows_x86_arm64 do
       cp 'output/release-dynamic/ARM/bin/libwebpdemux.dll', arch_lib_dir
     end
   end
+end
+
+
+desc "zip library_android"
+task :zip_library_android do
+  zf = ZipFileGenerator.new('lib', 'android.zip')
+  zf.write()
+end
+
+desc "zip library_macos"
+task :zip_library_macos do
+  zf = ZipFileGenerator.new('lib', 'macos.zip')
+  zf.write()
+end
+
+desc "zip library_windows"
+task :zip_library_windows do
+  zf = ZipFileGenerator.new('lib', 'windows.zip')
+  zf.write()
 end

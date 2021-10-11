@@ -23,24 +23,24 @@ jobs:
       - name: Run Buildscript
         run: bundle exec rake prepare_library_windows
 
-      # - name: Install Dependency x86_64
-      #   uses: ilammy/msvc-dev-cmd@v1
-      #   with:
-      #       arch: x86_64
-      # - name: Run Buildscript
-      #   run: bundle exec rake update_library_windows_x64
+      - name: Install Dependency x86_64
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+            arch: x86_64
+      - name: Run Buildscript
+        run: bundle exec rake update_library_windows_x64
 
-      # - name: Install Dependency x86
-      #   uses: ilammy/msvc-dev-cmd@v1
-      #   with:
-      #       arch: x86
-      # - name: Run Buildscript
-      #   run: bundle exec rake update_library_windows_x86
+      - name: Install Dependency x86
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+            arch: x86
+      - name: Run Buildscript
+        run: bundle exec rake update_library_windows_x86
 
       - name: Install Dependency x86_arm64
         uses: ilammy/msvc-dev-cmd@v1
         with:
             arch: x86_arm64
       - name: Run Buildscript
-        run: bundle exec rake update_library_windows_x86_arm64
+        run: bundle exec rake update_library_windows_arm64
 
