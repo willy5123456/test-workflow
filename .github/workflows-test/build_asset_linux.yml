@@ -10,11 +10,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      # - name: Install Dependency
-      #   run: |
-      #     sudo apt-get install coreutils
-      #     sudo apt-get install automake
-
       - name: Install Ruby
         uses: ruby/setup-ruby@v1.82.0
         with:
