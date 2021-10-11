@@ -87,9 +87,10 @@ jobs:
         run: bundle exec rake update_library_windows_arm64
 
       - name: Run Zip
-        run: |
-          bundle exec rake print_lib_md5
-          bundle exec rake zip_library
+        run: bundle exec rake zip_library
+
+      - name: Print MD5
+        run: bundle exec rake print_lib_md5
 
       - name: Upload Asset
         uses: actions/upload-release-asset@v1
@@ -119,8 +120,10 @@ jobs:
       - name: Run Buildscript
         run: |
           bundle exec rake update_library_linux
-          bundle exec rake print_lib_md5
           bundle exec rake zip_library
+
+      - name: Print MD5
+        run: bundle exec rake print_lib_md5
 
       - name: Upload Asset
         uses: actions/upload-release-asset@v1
@@ -155,8 +158,10 @@ jobs:
       - name: Run Buildscript
         run: |
           bundle exec rake update_library_android
-          bundle exec rake print_lib_md5
           bundle exec rake zip_library
+
+      - name: Print MD5
+        run: bundle exec rake print_lib_md5
 
       - name: Upload Asset
         uses: actions/upload-release-asset@v1
@@ -189,8 +194,10 @@ jobs:
       - name: Run Buildscript
         run: |
           bundle exec rake update_library_macos
-          bundle exec rake print_lib_md5
           bundle exec rake zip_library
+
+      - name: Print MD5
+        run: bundle exec rake print_lib_md5
 
       - name: Upload Asset
         uses: actions/upload-release-asset@v1
@@ -223,8 +230,10 @@ jobs:
       - name: Run Buildscript
         run: |
           bundle exec rake update_library_ios
-          bundle exec rake print_lib_md5
           bundle exec rake zip_library
+
+      - name: Print MD5
+        run: bundle exec rake print_lib_md5
 
       - name: Upload Asset
         uses: actions/upload-release-asset@v1
