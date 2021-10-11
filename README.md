@@ -5,13 +5,13 @@
 - [x] tag
 - [x] 체크인
 - [x] Rake
-- [ ] NDK
+- [x] NDK
 - [ ] 빌드스크립트 실행
   - [x] 릴리즈 파일
-- [ ] 릴리즈 노트에 md5
+  - [ ] 빌드 로그에 md5
 - [x] 릴리즈
-- [ ] 멀티플렛폼
-
+- [x] 멀티플렛폼
+- [ ] 리펙토링
 
 | Platforms | Arch        | Support? | action |
 | --------- | ----------- | -------- | ------ |
@@ -20,16 +20,15 @@
 | Windows   | x86_arm64   |          | o      |
 | Linux     | x86_64      |          | o      |
 | macOS     | x86_64      |          | o      |
-| iOS       | 64bit       |          |        |
-| tvOS      | 64bit       |          |        |
+| iOS       | 64bit       |          | o      |
+| tvOS      | 64bit       |          | x      |
 | Android   | armeabi-v7a |          | o      |
 | Android   | arm64_v8a   |          | o      |
 | Android   | x86         |          | o      |
 | Android   | x86_64      |          | o      |
-| Linux     | x86         | x        |        |
+| Linux     | x86         | x        | x      |
 | WebGL     | .           | x        | x      |
 | Other     | .           | x        | x      |
-
 
 ## Ref
 
