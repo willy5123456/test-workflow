@@ -310,3 +310,9 @@ task :zip_library_linux do
   zf = ZipFileGenerator.new('lib', 'linux.zip')
   zf.write()
 end
+
+desc "zip library_ios"
+task :zip_library_ios do
+  zf = ZipFileGenerator.new('lib', 'ios.zip')
+  zf.write()
+end

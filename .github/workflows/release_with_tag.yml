@@ -6,6 +6,7 @@ on:
       - '*'
 
 jobs:
+
   ## ======================================================================================================
   release:
     name: Write Release
@@ -42,73 +43,6 @@ jobs:
     outputs:
       upload_url: ${{ steps.create_release.outputs.upload_url }}
 
-  ## ======================================================================================================
-  upload_asset_android:
-    needs: release
-    name: Upload Android Asset on Linux
-    runs-on: ubuntu-20.04
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Setup Android NDK
-        uses: nttld/setup-ndk@v1.0.6
-        with:
-          ndk-version: r21e
-
-      - name: Install Ruby
-        uses: ruby/setup-ruby@v1.82.0
-        with:
-          ruby-version: 2.7
-          bundler-cache: true # runs 'bundle install' and caches installed gems automatically
-
-      - name: Run Buildscript
-        run: |
-          bundle exec rake update_library_android
-          bundle exec rake zip_library_android
-
-      - name: Upload Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.release.outputs.upload_url }}
-          asset_path: ./android.zip
-          asset_name: android.zip
-          asset_content_type: application/octet-stream
-  ## ======================================================================================================
-  upload_asset_macos:
-    needs: release
-    name: Upload Asset on MacOS
-    runs-on: macos-10.15
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Install Dependency
-        run: |
-          brew install coreutils automake
-
-      - name: Install Ruby
-        uses: ruby/setup-ruby@v1.82.0
-        with:
-          ruby-version: 2.7
-          bundler-cache: true # runs 'bundle install' and caches installed gems automatically
-
-      - name: Run Buildscript
-        run: |
-          bundle exec rake update_library_macos
-          bundle exec rake zip_library_macos
-
-      - name: Upload Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.release.outputs.upload_url }}
-          asset_path: ./macos.zip
-          asset_name: macos.zip
-          asset_content_type: application/octet-stream
   ## ======================================================================================================
   upload_asset_windows:
     needs: release
@@ -164,6 +98,7 @@ jobs:
           asset_path: ./windows.zip
           asset_name: windows.zip
           asset_content_type: application/octet-stream
+
   ## ======================================================================================================
   upload_asset_linux:
     needs: release
@@ -192,4 +127,107 @@ jobs:
           upload_url: ${{ needs.release.outputs.upload_url }}
           asset_path: ./linux.zip
           asset_name: linux.zip
+          asset_content_type: application/octet-stream
+
+  ## ======================================================================================================
+  upload_asset_android:
+    needs: release
+    name: Upload Android Asset on Linux
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Android NDK
+        uses: nttld/setup-ndk@v1.0.6
+        with:
+          ndk-version: r21e
+
+      - name: Install Ruby
+        uses: ruby/setup-ruby@v1.82.0
+        with:
+          ruby-version: 2.7
+          bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+
+      - name: Run Buildscript
+        run: |
+          bundle exec rake update_library_android
+          bundle exec rake zip_library_android
+
+      - name: Upload Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.release.outputs.upload_url }}
+          asset_path: ./android.zip
+          asset_name: android.zip
+          asset_content_type: application/octet-stream
+
+  ## ======================================================================================================
+  upload_asset_macos:
+    needs: release
+    name: Upload Asset on MacOS
+    runs-on: macos-10.15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install Dependency
+        run: |
+          brew install coreutils automake
+
+      - name: Install Ruby
+        uses: ruby/setup-ruby@v1.82.0
+        with:
+          ruby-version: 2.7
+          bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+
+      - name: Run Buildscript
+        run: |
+          bundle exec rake update_library_macos
+          bundle exec rake zip_library_macos
+
+      - name: Upload Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.release.outputs.upload_url }}
+          asset_path: ./macos.zip
+          asset_name: macos.zip
+          asset_content_type: application/octet-stream
+
+  ## ======================================================================================================
+  upload_asset_ios:
+    needs: release
+    name: Upload Asset on Mac (ios)
+    runs-on: macos-10.15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install Dependency
+        run: |
+          brew install coreutils automake
+
+      - name: Install Ruby
+        uses: ruby/setup-ruby@v1.82.0
+        with:
+          ruby-version: 2.7
+          bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+
+      - name: Run Buildscript
+        run: |
+          bundle exec rake update_library_ios
+          bundle exec rake zip_library_ios
+
+      - name: Upload Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.release.outputs.upload_url }}
+          asset_path: ./ios.zip
+          asset_name: ios.zip
           asset_content_type: application/octet-stream
