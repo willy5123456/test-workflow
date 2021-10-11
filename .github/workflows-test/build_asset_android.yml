@@ -1,18 +1,19 @@
-name: Build asset on macOS (iOS)
+name: Build asset on Linux (Android)
 
 on: [push]
 
 jobs:
-  build_asset_mac:
-    name: Build asset on macOS (iOS)
-    runs-on: macos-10.15
+  build_asset_linux:
+    name: Build asset on Linux (Android)
+    runs-on: ubuntu-20.04
     steps:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Install Dependency
-        run: |
-          brew install coreutils automake
+      - name: Setup Android NDK
+        uses: nttld/setup-ndk@v1.0.6
+        with:
+          ndk-version: r21e
 
       - name: Install Ruby
         uses: ruby/setup-ruby@v1.82.0
@@ -22,5 +23,4 @@ jobs:
 
       - name: Run Buildscript
         run: |
-          bundle exec rake update_library_ios
-
+          bundle exec rake update_library_linux
