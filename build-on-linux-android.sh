@@ -28,29 +28,45 @@ git checkout tags/1.0.18
 
 # [generate]
 cd $DIR_LIBSODIUM
+
+echo "================================== armv7-a"
+git clean -Xdf
 ./autogen.sh
-# ./dist-build/android-armv7-a.sh
-# ./dist-build/android-armv8-a.sh
-# ./dist-build/android-x86.sh
+./dist-build/android-armv7-a.sh
+mkdir -p $DIR_DEST/Plugins/Android/libs/armeabi-v7a
+ls -al $DIR_LIBSODIUM/libsodium-android-armv7-a/lib
+mv $DIR_LIBSODIUM/libsodium-android-armv7-a/lib/libsodium.a $DIR_LIBSODIUM/libsodium-android-armv7-a/lib/libsodium.so $DIR_DEST/Plugins/Android/libs/armeabi-v7a
+
+
+echo "================================== armv8-a"
+git clean -Xdf
+./autogen.sh
+./dist-build/android-armv8-a.sh
+mkdir -p $DIR_DEST/Plugins/Android/libs/armeabi-v8a
+ls -al $DIR_LIBSODIUM/libsodium-android-armv8-a/lib
+mv $DIR_LIBSODIUM/libsodium-android-armv8-a/lib/libsodium.a $DIR_LIBSODIUM/libsodium-android-armv8-a/lib/libsodium.so $DIR_DEST/Plugins/Android/libs/armeabi-v8a
+
+
+echo "================================== x86"
+git clean -Xdf
+./autogen.sh
+./dist-build/android-x86.sh
+mkdir -p $DIR_DEST/Plugins/Android/libs/x86
+ls -al $DIR_LIBSODIUM/libsodium-android-i686/lib
+mv $DIR_LIBSODIUM/libsodium-android-i686/lib/libsodium.a $DIR_LIBSODIUM/libsodium-android-i686/lib/libsodium.so $DIR_DEST/Plugins/Android/libs/x86
+
+
+echo "================================== x86_64"
+git clean -Xdf
+./autogen.sh
 ./dist-build/android-x86_64.sh
-
-
-
-# mkdir -p $DIR_DEST/Plugins/Android/libs/armeabi-v7a
-# mv $DIR_LIBSODIUM/libsodium-android-armv7-a/lib/libsodium.a $DIR_LIBSODIUM/libsodium-android-armv7-a/lib/libsodium.so $DIR_DEST/Plugins/Android/libs/armeabi-v7a
-
-# mkdir -p $DIR_DEST/Plugins/Android/libs/armeabi-v8a
-# mv $DIR_LIBSODIUM/libsodium-android-armv8-a/lib/libsodium.a $DIR_LIBSODIUM/libsodium-android-armv8-a/lib/libsodium.so $DIR_DEST/Plugins/Android/libs/armeabi-v8a
-
-# mkdir -p $DIR_DEST/Plugins/Android/libs/x86
-# mv $DIR_LIBSODIUM/libsodium-android-i686/lib/libsodium.a $DIR_LIBSODIUM/libsodium-android-i686/lib/libsodium.so $DIR_DEST/Plugins/Android/libs/x86
-
 mkdir -p $DIR_DEST/Plugins/Android/libs/x86_64
+ls -al $DIR_LIBSODIUM/libsodium-android-westmere/lib
 mv $DIR_LIBSODIUM/libsodium-android-westmere/lib/libsodium.a $DIR_LIBSODIUM/libsodium-android-westmere/lib/libsodium.so $DIR_DEST/Plugins/Android/libs/x86_64
+
 
 
 cd ..
 zip -r lib.zip $DIR_DEST*
 
 ls -al
-ls -al  $DIR_DEST
