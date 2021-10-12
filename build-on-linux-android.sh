@@ -29,25 +29,28 @@ git checkout tags/1.0.18
 # [generate]
 cd $DIR_LIBSODIUM
 ./autogen.sh
-./dist-build/android-armv7-a.sh
-./dist-build/android-armv8-a.sh
-./dist-build/android-x86.sh
+# ./dist-build/android-armv7-a.sh
+# ./dist-build/android-armv8-a.sh
+# ./dist-build/android-x86.sh
 ./dist-build/android-x86_64.sh
 
 
 
-mkdir -p $DIR_DEST/Plugins/Android/libs/armeabi-v7a
-mv $DIR_LIBSODIUM/libsodium-android-armv7-a/lib/libsodium.a $DIR_LIBSODIUM/libsodium-android-armv7-a/lib/libsodium.so $DIR_DEST/Plugins/Android/libs/armeabi-v7a
+# mkdir -p $DIR_DEST/Plugins/Android/libs/armeabi-v7a
+# mv $DIR_LIBSODIUM/libsodium-android-armv7-a/lib/libsodium.a $DIR_LIBSODIUM/libsodium-android-armv7-a/lib/libsodium.so $DIR_DEST/Plugins/Android/libs/armeabi-v7a
 
-mkdir -p $DIR_DEST/Plugins/Android/libs/armeabi-v8a
-mv $DIR_LIBSODIUM/libsodium-android-armv8-a/lib/libsodium.a $DIR_LIBSODIUM/libsodium-android-armv8-a/lib/libsodium.so $DIR_DEST/Plugins/Android/libs/armeabi-v8a
+# mkdir -p $DIR_DEST/Plugins/Android/libs/armeabi-v8a
+# mv $DIR_LIBSODIUM/libsodium-android-armv8-a/lib/libsodium.a $DIR_LIBSODIUM/libsodium-android-armv8-a/lib/libsodium.so $DIR_DEST/Plugins/Android/libs/armeabi-v8a
 
-mkdir -p $DIR_DEST/Plugins/Android/libs/x86
-mv $DIR_LIBSODIUM/libsodium-android-i686/lib/libsodium.a $DIR_LIBSODIUM/libsodium-android-i686/lib/libsodium.so $DIR_DEST/Plugins/Android/libs/x86
+# mkdir -p $DIR_DEST/Plugins/Android/libs/x86
+# mv $DIR_LIBSODIUM/libsodium-android-i686/lib/libsodium.a $DIR_LIBSODIUM/libsodium-android-i686/lib/libsodium.so $DIR_DEST/Plugins/Android/libs/x86
 
 mkdir -p $DIR_DEST/Plugins/Android/libs/x86_64
 mv $DIR_LIBSODIUM/libsodium-android-westmere/lib/libsodium.a $DIR_LIBSODIUM/libsodium-android-westmere/lib/libsodium.so $DIR_DEST/Plugins/Android/libs/x86_64
 
 
 cd ..
-zip -r lib.zip $DIR_LIBSODIUM*
+zip -r lib.zip $DIR_DEST*
+
+ls -al
+ls -al  $DIR_DEST
