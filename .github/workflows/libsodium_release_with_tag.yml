@@ -1,0 +1,30 @@
+name: Release with Tag for libsodium
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+
+  ## ======================================================================================================
+  release:
+    name: Write Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          draft: false
+          prerelease: false
+          release_name: ${{ github.ref }}
+          tag_name: ${{ github.ref }}
+          body: release
+
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+
+  ## ======================================================================================================

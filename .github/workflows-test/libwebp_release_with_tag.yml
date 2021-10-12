@@ -1,4 +1,4 @@
-name: Release with Tag
+name: Release with Tag libwebp
 
 on:
   push:
