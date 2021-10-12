@@ -1,0 +1,19 @@
+name: Build asset on Windows
+
+on: [push]
+
+jobs:
+  build_asset_windows:
+    name: Build asset on Windows
+    runs-on: windows-2019
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.0.3
+        with:
+            vs-version: '[16.11, 16.12)'
+
+      - name: Run Buildscript
+        run: ./build-on-windows.bat
