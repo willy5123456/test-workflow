@@ -7,20 +7,22 @@ set -e
 # | ---------------- | ------ | ------- |
 # | macOS            | x86_64 | o       |
 # | macOS            | arm64  | x       |
+# | iOS              | armv7  | o       |
 # | iOS              | armv7s | o       |
-# | iOS              | arm64  | x       |
+# | iOS              | arm64  | o       |
 # | iOS (Simulator)  | x86_64 | o       |
-# | iOS (Simulator)  | arm64  | x       |
 # | tvOS             | arm64  | o       |
-# | tvOS (Simulator) | arm64  | x       |
 # | tvOS (Simulator) | x86_64 | o       |
 #
+# lipo iOS (armv7, armv7s, arm64, x86_64(simulator))
+# lipo tvOS(               arm64, x86_64(simulator))
+#
+# armv6 
+# armv7
+# armv7s 
+# armv8
 # arm64
 # arm64e 
-# armv8
-# armv7s 
-# armv7
-# armv6 
 #---------------------------------------------------------------------------------------------
 
 
@@ -108,13 +110,83 @@ git clone -b ${VERSION} --depth 1 https://github.com/sqlcipher/sqlcipher.git && 
 #---------------------------------------------------------------------------------------------
 
 #---------------------------------------------------------------------------------------------
+# iOS              (armv7)
+#---------------------------------------------------------------------------------------------
+echo "============================================================= iOS              (armv7) "
+git clean -Xdf
+
+# configure
+ARCH=armv7
+IOS_MIN_SDK_VERSION=10.0
+OS_COMPILER="iPhoneOS"
+HOST="arm-apple-darwin"
+
+export CROSS_TOP="${DEVELOPER}/Platforms/${OS_COMPILER}.platform/Developer"
+export CROSS_SDK="${OS_COMPILER}.sdk"
+
+CFLAGS="\
+-fembed-bitcode \
+-arch ${ARCH} \
+-isysroot ${CROSS_TOP}/SDKs/${CROSS_SDK} \
+-mios-version-min=${IOS_MIN_SDK_VERSION} \
+"
+
+./configure ${COMPILE_OPTION} --host="$HOST" CFLAGS="${CFLAGS} ${SQLITE_CFLAGS}" LDFLAGS="${LDFLAGS}"
+
+
+# compile
+make clean
+make sqlite3.h
+make sqlite3ext.h
+make libsqlcipher.la
+
+# copy
+mkdir -p ${DIR_OUTPUT}/iOS/${ARCH}
+cp .libs/libsqlcipher.a ${DIR_OUTPUT}/iOS/${ARCH}/libsqlcipher.a
+
+#---------------------------------------------------------------------------------------------
 # iOS              (armv7s)
 #---------------------------------------------------------------------------------------------
 echo "============================================================= iOS              (armv7s)"
 git clean -Xdf
 
 # configure
-ARCH=armv7
+ARCH=armv7s
+IOS_MIN_SDK_VERSION=10.0
+OS_COMPILER="iPhoneOS"
+HOST="arm-apple-darwin"
+
+export CROSS_TOP="${DEVELOPER}/Platforms/${OS_COMPILER}.platform/Developer"
+export CROSS_SDK="${OS_COMPILER}.sdk"
+
+CFLAGS="\
+-fembed-bitcode \
+-arch ${ARCH} \
+-isysroot ${CROSS_TOP}/SDKs/${CROSS_SDK} \
+-mios-version-min=${IOS_MIN_SDK_VERSION} \
+"
+
+./configure ${COMPILE_OPTION} --host="$HOST" CFLAGS="${CFLAGS} ${SQLITE_CFLAGS}" LDFLAGS="${LDFLAGS}"
+
+# compile
+make clean
+make sqlite3.h
+make sqlite3ext.h
+make libsqlcipher.la
+
+# copy
+mkdir -p ${DIR_OUTPUT}/iOS/${ARCH}
+cp .libs/libsqlcipher.a ${DIR_OUTPUT}/iOS/${ARCH}/libsqlcipher.a
+
+
+#---------------------------------------------------------------------------------------------
+# iOS              (arm64)
+#---------------------------------------------------------------------------------------------
+echo "============================================================= iOS              (arm64) "
+git clean -Xdf
+
+# configure
+ARCH=arm64
 IOS_MIN_SDK_VERSION=10.0
 OS_COMPILER="iPhoneOS"
 HOST="arm-apple-darwin"
@@ -172,8 +244,27 @@ make sqlite3ext.h
 make libsqlcipher.la
 
 # copy
-mkdir -p ${DIR_OUTPUT}/iOS-Simulator/${ARCH}
-cp .libs/libsqlcipher.a ${DIR_OUTPUT}/iOS-Simulator/${ARCH}/libsqlcipher.a
+mkdir -p ${DIR_OUTPUT}/iOS/${ARCH}
+cp .libs/libsqlcipher.a ${DIR_OUTPUT}/iOS/${ARCH}/libsqlcipher.a
+
+#---------------------------------------------------------------------------------------------
+# lipo iOS (armv7, armv7s, arm64, x86_64(simulator))
+#---------------------------------------------------------------------------------------------
+echo "=================================== lipo iOS (armv7, armv7s, arm64, x86_64(simulator))"
+
+mkdir -p ${DIR_OUTPUT}/iOS/lipo
+
+lipo -create -output ${DIR_OUTPUT}/iOS/lipo/libsqlcipher.a     \
+  ${DIR_OUTPUT}/iOS/armv7/libsqlcipher.a                       \
+  ${DIR_OUTPUT}/iOS/armv7s/libsqlcipher.a                      \
+  ${DIR_OUTPUT}/iOS/arm64/libsqlcipher.a                       \
+  ${DIR_OUTPUT}/iOS/x86_64/libsqlcipher.a
+
+lipo -info ${DIR_OUTPUT}/iOS/lipo/libsqlcipher.a
+
+
+
+
 
 #---------------------------------------------------------------------------------------------
 # tvOS             (arm64)
@@ -215,20 +306,20 @@ echo "============================================================= tvOS (Simula
 git clean -Xdf
 
 # configure
-ARCH=arm64
+ARCH=x86_64
 TVOS_MIN_SDK_VERSION=10.0
-OS_COMPILER="AppleTVOS"
-HOST="arm-apple-darwin"
+OS_COMPILER="AppleTVSimulator"
+HOST="x86_64-apple-darwin"
 
 export CROSS_TOP="${DEVELOPER}/Platforms/${OS_COMPILER}.platform/Developer"
 export CROSS_SDK="${OS_COMPILER}.sdk"
 
 CFLAGS="\
--fembed-bitcode \
 -arch ${ARCH} \
 -isysroot ${CROSS_TOP}/SDKs/${CROSS_SDK} \
 -mtvos-version-min=${TVOS_MIN_SDK_VERSION} \
 "
+
 ./configure ${COMPILE_OPTION} --host="$HOST" CFLAGS="${CFLAGS} ${SQLITE_CFLAGS}" LDFLAGS="${LDFLAGS}"
 
 # compile
@@ -238,8 +329,25 @@ make sqlite3ext.h
 make libsqlcipher.la
 
 # copy
-mkdir -p ${DIR_OUTPUT}/tvOS-Simulator/${ARCH}
-cp .libs/libsqlcipher.a ${DIR_OUTPUT}/tvOS-Simulator/${ARCH}/libsqlcipher.a
+mkdir -p ${DIR_OUTPUT}/tvOS/${ARCH}
+cp .libs/libsqlcipher.a ${DIR_OUTPUT}/tvOS/${ARCH}/libsqlcipher.a
+
+#---------------------------------------------------------------------------------------------
+# lipo tvOS(               arm64, x86_64(simulator))
+#---------------------------------------------------------------------------------------------
+echo "=================================== lipo tvOS(               arm64, x86_64(simulator))"
+mkdir -p ${DIR_OUTPUT}/tvOS/lipo
+
+lipo -create -output ${DIR_OUTPUT}/tvOS/lipo/libsqlcipher.a     \
+  ${DIR_OUTPUT}/tvOS/arm64/libsqlcipher.a                       \
+  ${DIR_OUTPUT}/tvOS/x86_64/libsqlcipher.a
+
+lipo -info ${DIR_OUTPUT}/tvOS/lipo/libsqlcipher.a
+
+
+
+
+
 
 #---------------------------------------------------------------------------------------------
 # print DIR_OUTPUT
