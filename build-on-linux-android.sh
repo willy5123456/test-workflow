@@ -24,25 +24,50 @@ OPENSSL_CONFIGURE_OPTIONS="-fPIC -fstack-protector-all no-idea no-camellia \
  no-srtp \
 "
 
-CONFIGURE_ARCH="android-arm -march=armv7-a"
-ANDROID_API_VERSION=${MINIMUM_ANDROID_SDK_VERSION}
-OFFSET_BITS=32
-
 TOOLCHAIN_SYSTEM=linux-x86_64
-TOOLCHAIN_BIN_PATH=${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/${TOOLCHAIN_SYSTEM}/bin
-PATH=${TOOLCHAIN_BIN_PATH}:${PATH} ./Configure ${CONFIGURE_ARCH} \
- -D__ANDROID_API__=${ANDROID_API_VERSION} \
- -D_FILE_OFFSET_BITS=${OFFSET_BITS} \
- ${OPENSSL_CONFIGURE_OPTIONS}
 
-make clean
-PATH=${TOOLCHAIN_BIN_PATH}:${PATH} make build_libs
+for ARCH in armv7-a arm64 x86 x86_64 
+do
+    case "${ARCH}" in
+        armv7-a)
+            CONFIGURE_ARCH="android-arm -march=armv7-a"
+            ANDROID_API_VERSION=${MINIMUM_ANDROID_SDK_VERSION}
+            OFFSET_BITS=32
+            ;;
+        arm64)
+            CONFIGURE_ARCH=android-arm64
+            ANDROID_API_VERSION=${MINIMUM_ANDROID_64_BIT_SDK_VERSION}
+            OFFSET_BITS=64
+            ;;
+        x86)
+            CONFIGURE_ARCH=android-x86
+            ANDROID_API_VERSION=${MINIMUM_ANDROID_SDK_VERSION}
+            OFFSET_BITS=32
+            ;;
+        x86_64)
+            CONFIGURE_ARCH=android64-x86_64
+            ANDROID_API_VERSION=${MINIMUM_ANDROID_64_BIT_SDK_VERSION}
+            OFFSET_BITS=64
+            ;;
+        *)
+            exit 1
+    esac
+    git checkout -f
+    git clean -Xdf
 
-mkdir -p ${DIR_OUTPUT}/armv7-a/
-mv libcrypto.a ${DIR_OUTPUT}/armv7-a/
-cp -R include ${DIR_OUTPUT}/armv7-a/
+    TOOLCHAIN_BIN_PATH=${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/${TOOLCHAIN_SYSTEM}/bin
+    PATH=${TOOLCHAIN_BIN_PATH}:${PATH} ./Configure ${CONFIGURE_ARCH} \
+                                        -D__ANDROID_API__=${ANDROID_API_VERSION} \
+                                        -D_FILE_OFFSET_BITS=${OFFSET_BITS} \
+                                        ${OPENSSL_CONFIGURE_OPTIONS}
 
-ls -al ${DIR_OUTPUT}/armv7-a/
+    make clean
+    PATH=${TOOLCHAIN_BIN_PATH}:${PATH} make build_libs
+
+    mkdir -p ${DIR_OUTPUT}/${ARCH}/
+    mv libcrypto.a ${DIR_OUTPUT}/${ARCH}/
+    cp -R include ${DIR_OUTPUT}/${ARCH}/
+done
 
 cd ..
 
@@ -77,71 +102,74 @@ sqlcipherCFlags="-DSQLITE_HAS_CODEC \
 #ARCH=arm64
 #ARCH=x86
 #ARCH=x86_64
-
-HOST=armv7a-linux-androideabi
-# HOST=aarch64-linux-android
-# HOST=i686-linux-android
-# HOST=x86_64-linux-android
-
 ANDROID_NDK_SYSROOT=${ANDROID_NDK_TOOLCHAIN}/sysroot
-API=${MINIMUM_ANDROID_64_BIT_SDK_VERSION}
-
-export AR=${ANDROID_NDK_TOOLCHAIN}/bin/llvm-ar
-export CC=${ANDROID_NDK_TOOLCHAIN}/bin/${HOST}${API}-clang
-export AS=$CC
-export CXX=${ANDROID_NDK_TOOLCHAIN}/bin/${HOST}${API}-clang++
-export LD=${ANDROID_NDK_TOOLCHAIN}/bin/ld
-export RANLIB=${ANDROID_NDK_TOOLCHAIN}/bin/llvm-ranlib
-export STRIP=${ANDROID_NDK_TOOLCHAIN}/bin/llvm-strip
 
 # [src] sqlcipher
 git clone -b ${VERSION} --depth 1 https://github.com/sqlcipher/sqlcipher.git && cd $DIR_SOURCE
 
+for ARCH in armv7-a arm64 x86 x86_64 
+do
+    case "${ARCH}" in
+        armv7-a)
+            HOST=armv7a-linux-androideabi
+            API=${MINIMUM_ANDROID_SDK_VERSION}
+            ;;
+        arm64)
+            HOST=aarch64-linux-android
+            API=${MINIMUM_ANDROID_64_BIT_SDK_VERSION}
+            ;;
+        x86)
+            HOST=i686-linux-android
+            API=${MINIMUM_ANDROID_SDK_VERSION}
+            ;;
+        x86_64)
+            HOST=x86_64-linux-android
+            API=${MINIMUM_ANDROID_64_BIT_SDK_VERSION}
+            ;;
+        *)
+            exit 1
+    esac
+    git checkout -f
+    git clean -Xdf
 
-# configure
-SQLCHIPER_CONFIGURE_OPTIONS="--with-crypto-lib=none \
- -enable-tempstore=no \
- --disable-tcl \
- --host ${HOST} \
-"
+    export AR=${ANDROID_NDK_TOOLCHAIN}/bin/llvm-ar
+    export CC=${ANDROID_NDK_TOOLCHAIN}/bin/${HOST}${API}-clang
+    export AS=$CC
+    export CXX=${ANDROID_NDK_TOOLCHAIN}/bin/${HOST}${API}-clang++
+    export LD=${ANDROID_NDK_TOOLCHAIN}/bin/ld
+    export RANLIB=${ANDROID_NDK_TOOLCHAIN}/bin/llvm-ranlib
+    export STRIP=${ANDROID_NDK_TOOLCHAIN}/bin/llvm-strip
 
-# CFLAGS="--sysroot=${ANDROID_NDK_SYSROOT} \
-# ${sqlcipherCFlags} \
-# ${otherSqlcipherCFlags} \
-# -I../openssl/include \
-# "
+    # configure
+    SQLCHIPER_CONFIGURE_OPTIONS="--with-crypto-lib=none \
+    -enable-tempstore=no \
+    --disable-tcl \
+    --host ${HOST} \
+    "
 
-CFLAGS="--sysroot=${ANDROID_NDK_SYSROOT} \
-${sqlcipherCFlags} \
-${otherSqlcipherCFlags} \
--I${DIR_OUTPUT}/armv7-a/include \
-"
- 
+    CFLAGS="--sysroot=${ANDROID_NDK_SYSROOT} \
+    ${sqlcipherCFlags} \
+    ${otherSqlcipherCFlags} \
+    -I${DIR_OUTPUT}/${ARCH}/include \
+    "
 
-LDFLAGS=" \
-${DIR_OUTPUT}/armv7-a/libcrypto.a \
--lm \
-"
+    LDFLAGS=" \
+    ${DIR_OUTPUT}/${ARCH}/libcrypto.a \
+    -lm \
+    "
 
-./configure ${SQLCHIPER_CONFIGURE_OPTIONS} CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}"
+    ./configure ${SQLCHIPER_CONFIGURE_OPTIONS} CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}"
 
-echo "=========================================================="
-# compile
-make clean
-make sqlite3.c
-make
+    # compile
+    make clean
+    make sqlite3.c
+    make
 
-ls -al
-ls -al .libs
-echo "=========================================================="
+    mv .libs/libsqlcipher.a ${DIR_OUTPUT}/${ARCH}/
+    echo "=========================================================="
+    ls -al ${DIR_OUTPUT}/${ARCH}/
+done
 
-# copy
-#libsqlcipher_fpath=`readlink -f .libs/libsqlcipher.so`
-#libcrypto_fpath=`readlink -f /usr/lib/x86_64-linux-gnu/libcrypto.so`
-#
-#mkdir -p ${DIR_OUTPUT}
-#cp ${libsqlcipher_fpath} ${DIR_OUTPUT}/libsqlcipher.so
-#cp ${libcrypto_fpath} ${DIR_OUTPUT}/libcrypto.so
-#
+
 ## zip -r lib.zip libsodium/.libs/*
 #ls -al ${DIR_OUTPUT}
