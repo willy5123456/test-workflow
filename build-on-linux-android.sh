@@ -40,6 +40,7 @@ PATH=${TOOLCHAIN_BIN_PATH}:${PATH} make build_libs
 
 mkdir -p ${DIR_OUTPUT}/armv7-a/
 mv libcrypto.a ${DIR_OUTPUT}/armv7-a/
+cp -R include ${DIR_OUTPUT}/armv7-a/
 
 ls -al ${DIR_OUTPUT}/armv7-a/
 
@@ -104,11 +105,18 @@ SQLCHIPER_CONFIGURE_OPTIONS="--with-crypto-lib=none \
  --host ${HOST} \
 "
 
+# CFLAGS="--sysroot=${ANDROID_NDK_SYSROOT} \
+# ${sqlcipherCFlags} \
+# ${otherSqlcipherCFlags} \
+# -I../openssl/include \
+# "
+
 CFLAGS="--sysroot=${ANDROID_NDK_SYSROOT} \
 ${sqlcipherCFlags} \
 ${otherSqlcipherCFlags} \
--I../openssl/include \
+-I${DIR_OUTPUT}/armv7-a/include \
 "
+ 
 
 LDFLAGS=" \
 ${DIR_OUTPUT}/armv7-a/libcrypto.a \
