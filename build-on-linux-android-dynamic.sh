@@ -65,8 +65,8 @@ do
     PATH=${TOOLCHAIN_BIN_PATH}:${PATH} make build_libs
 
     mkdir -p ${DIR_OUTPUT}/${ARCH}/
-    ls -al *.so*
-    mv *.so* ${DIR_OUTPUT}/${ARCH}/
+    ls -al *.a
+    mv *.a ${DIR_OUTPUT}/${ARCH}/
     cp -R include ${DIR_OUTPUT}/${ARCH}/
 done
 
@@ -168,21 +168,22 @@ do
     
     sed -i 's/for ac_option in --version -v -V -qversion; do/for ac_option in --version -v; do/' configure
 
-    ./configure ${SQLCHIPER_CONFIGURE_OPTIONS} CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}"
+    ./configure ${SQLCHIPER_CONFIGURE_OPTIONS}
+    echo "=========================================================="
     cat config.log
+    echo "=========================================================="
 
     # compile
     make clean
     make sqlite3.c
-    make
+
+    ${CC} ${CFLAGS} -o libsqlcipher.so ${DIR_OUTPUT}/${ARCH}/libcrypto.a
 
     echo "=========================================================="
-    ls -al .libs/
-    file sqlcipher
+    file libsqlcipher.so
     echo "=========================================================="
 
-    ls -al
-    mv .libs/*.so* ${DIR_OUTPUT}/${ARCH}/
+    mv libsqlcipher.so ${DIR_OUTPUT}/${ARCH}/
     echo "=========================================================="
     ls -al ${DIR_OUTPUT}/${ARCH}/
 done
