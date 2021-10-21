@@ -77,7 +77,6 @@ git clone -b ${VERSION} --depth 1 https://github.com/sqlcipher/sqlcipher.git && 
 ## macOS            (arm64)
 ##---------------------------------------------------------------------------------------------
 echo "============================================================= macOS            (arm64)"
-# CPUARCHOPT? [MacOS Apple Silicon 에서 universal binary 만들기](https://rageworx.pe.kr/1959)
 git clean -Xdf
 
 # configure
@@ -114,6 +113,10 @@ libsqlcipher_fpath=`greadlink -f .libs/libsqlcipher.dylib`
 mkdir -p ${DIR_OUTPUT}/macOS/${ARCH}
 cp ${libsqlcipher_fpath} ${DIR_OUTPUT}/macOS/${ARCH}/sqlcipher.bundle
 
+
+lipo -info ${DIR_OUTPUT}/macOS/${ARCH}/sqlcipher.bundle
+
+file ${DIR_OUTPUT}/macOS/${ARCH}/sqlcipher.bundle
 
 #---------------------------------------------------------------------------------------------
 # print DIR_OUTPUT
