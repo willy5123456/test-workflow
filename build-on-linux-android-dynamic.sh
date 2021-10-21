@@ -80,7 +80,7 @@ sqlcipherCFlags="-DSQLITE_HAS_CODEC \
  -DSQLITE_SOUNDEX \
  -DHAVE_USLEEP=1 \
  -DSQLITE_MAX_VARIABLE_NUMBER=99999 \
- -DSQLITE_TEMP_STORE=3 \
+ -DSQLITE_TEMP_STORE=2 \
  -DSQLITE_THREADSAFE=1 \
  -DSQLITE_DEFAULT_JOURNAL_SIZE_LIMIT=1048576 \
  -DNDEBUG=1 \
@@ -142,11 +142,12 @@ do
     export STRIP=${ANDROID_NDK_TOOLCHAIN}/bin/llvm-strip
 
     # configure
-    SQLCHIPER_CONFIGURE_OPTIONS="--with-crypto-lib=none \
-    --enable-shared \
-    --enable-static=no \
-    --enable-tempstore=no \
+    SQLCHIPER_CONFIGURE_OPTIONS=" \
+    --with-pic \
     --disable-tcl \
+    --enable-tempstore=yes \
+    --enable-threadsafe=yes \
+    --with-crypto-lib=none \
     --host ${HOST} \
     "
 
@@ -177,6 +178,7 @@ do
 
     echo "=========================================================="
     ls -al .libs/
+    file sqlcipher
     echo "=========================================================="
 
     ls -al
