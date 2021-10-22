@@ -145,6 +145,9 @@ do
     SQLCHIPER_CONFIGURE_OPTIONS=" \
     --with-pic \
     --disable-tcl \
+    --enable-shared=yes \
+    --enable-static=no \
+    --disable-readline \
     --enable-tempstore=yes \
     --enable-threadsafe=yes \
     --with-crypto-lib=none \
@@ -158,29 +161,29 @@ do
     "
 
     LDFLAGS=" \
-    -shared \
-    -L${DIR_OUTPUT}/${ARCH} \
-    -L${DIR_SOURCE} \
-    -lcrypto \
+    ${DIR_OUTPUT}/${ARCH}/libcrypto.a \
     -lm \
     "
 # -lm \
     
     sed -i 's/for ac_option in --version -v -V -qversion; do/for ac_option in --version -v; do/' configure
 
-    ./configure ${SQLCHIPER_CONFIGURE_OPTIONS}
+    ./configure ${SQLCHIPER_CONFIGURE_OPTIONS} CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}"
     echo "=========================================================="
     cat config.log
     echo "=========================================================="
 
     # compile
+    echo "make clean =========================================================="
     make clean
+    echo "make sqlite3.c =========================================================="
     make sqlite3.c
 
-    ${CC} ${CFLAGS} -o libsqlcipher.so ${DIR_OUTPUT}/${ARCH}/libcrypto.a
-
+    echo "compile =========================================================="
+    ${CC} ${CFLAGS} ${DIR_OUTPUT}/${ARCH}/libcrypto.a -shared -fPIC -lm sqlite3.c -o libsqlcipher.so
     echo "=========================================================="
     file libsqlcipher.so
+    ls -al .libs
     echo "=========================================================="
 
     mv libsqlcipher.so ${DIR_OUTPUT}/${ARCH}/
