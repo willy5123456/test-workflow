@@ -18,7 +18,7 @@ DIR_SOURCE=${ROOT}/zstd/lib
 DIR_OUTPUT=${ROOT}/output
 
 
-# [src] libsodium
+# [src] zstd
 git clone -b ${VERSION} --depth 1 https://github.com/facebook/zstd.git && cd $DIR_SOURCE
 
 # compile
