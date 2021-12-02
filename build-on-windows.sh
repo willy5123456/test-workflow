@@ -23,7 +23,7 @@ git clone -b ${VERSION} --depth 1 https://github.com/facebook/zstd.git && cd $DI
 
 # compile
 make clean
-make libzstd
+make lib-mt
 
 # copy
 libzstd_fpath=dll/libzstd.dll
